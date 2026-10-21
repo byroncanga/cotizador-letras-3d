@@ -25,9 +25,10 @@ jobs:
           APP_URL: https://cotizador.example.com
           TALLER_DB_PASSWORD: ci-test-password
           TALLER_DB_ROOT_PASSWORD: ci-test-root-password
-      - name: Build production image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile
-          push: false
+      - name: Build all EasyPanel services
+        run: docker compose build
+        env:
+          APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+          APP_URL: https://cotizador.example.com
+          TALLER_DB_PASSWORD: ci-test-password
+          TALLER_DB_ROOT_PASSWORD: ci-test-root-password
