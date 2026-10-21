@@ -18,6 +18,13 @@ jobs:
         uses: actions/checkout@v4
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+      - name: Validate EasyPanel Compose stack
+        run: docker compose config --quiet
+        env:
+          APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+          APP_URL: https://cotizador.example.com
+          TALLER_DB_PASSWORD: ci-test-password
+          TALLER_DB_ROOT_PASSWORD: ci-test-root-password
       - name: Build production image
         uses: docker/build-push-action@v6
         with:
