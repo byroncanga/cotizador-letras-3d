@@ -39,21 +39,15 @@ La cuenta propietaria se crea con datos introducidos por el operador. No hay usu
 
 ### Docker y EasyPanel
 
-`Dockerfile` compila la SPA y la sirve con Nginx. `compose.yaml` levanta la web, Laravel, el servicio geométrico y MySQL; el punto de entrada HTTP es `web:80`. Laravel aplica las migraciones automáticamente cuando inicia la API. MySQL no publica ningún puerto al exterior y conserva los datos en el volumen `taller_mysql`.
+El `Dockerfile` raíz crea una imagen única para el modo **App / Dockerfile** de EasyPanel. Incluye la web, el analizador geométrico y Laravel, y Nginx los enruta dentro del mismo contenedor. No requiere configurar servicios upstream, base de datos ni variables para iniciar. La clave de Laravel se genera al arrancar.
 
-#### EasyPanel
+#### EasyPanel (App / Dockerfile)
 
-1. Crea un servicio **Compose** conectado al repositorio `byroncanga/cotizador-letras-3d`, rama `main`.
-2. Usa la raíz del repositorio como Build Path (`/`) y `compose.yaml` como archivo Compose. No lo crees como servicio **App/Dockerfile**: ese modo levanta solo la web y produce el error `host not found in upstream "geometry"`.
-3. Antes del primer Deploy, añade estas variables en el panel de EasyPanel. No las guardes en GitHub:
-   - `APP_KEY`: una clave Laravel generada una vez con `php artisan key:generate --show` desde `apps/api`.
-   - `APP_URL`: la URL HTTPS final del cotizador.
-   - `TALLER_DB_PASSWORD`: contraseña nueva para el usuario MySQL de la aplicación.
-   - `TALLER_DB_ROOT_PASSWORD`: contraseña nueva y distinta para el administrador MySQL.
-4. Dirige el dominio público al servicio `web`, puerto `80`. No publiques `mysql`, `api` ni `geometry`.
-5. Pulsa **Deploy**. La API esperará a que MySQL esté saludable y aplicará las migraciones automáticamente.
+1. En Source, usa GitHub, el repositorio `byroncanga/cotizador-letras-3d`, rama `main` y Build Path `/`.
+2. En Build, selecciona Dockerfile y deja el archivo `Dockerfile`.
+3. Guarda y pulsa **Deploy**. La aplicación escucha HTTP en el puerto `80`; no requiere variables de entorno para iniciar.
 
-Conserva los volúmenes `taller_mysql` y `taller_storage` al actualizar. Si ya existe una instalación, utiliza los mismos valores de contraseñas y conserva esos volúmenes; reemplazarlos puede borrar datos.
+La cotización y la configuración de esta versión se mantienen en el almacenamiento local del navegador. La API de administración con almacenamiento MySQL aún no está integrada en los flujos de la interfaz.
 
 **Estado de esta entrega:** el contenedor compila y sirve la interfaz, pero aún no es un cotizador de producción completo. Los borradores siguen en el navegador y el endpoint de previsualización de costos está restringido al modo local; la UI todavía no inicia sesión ni sincroniza cotizaciones con MySQL. No uses esta entrega para emitir precios comerciales hasta terminar esa integración. Docker no está instalado en el equipo de desarrollo de esta sesión, por lo que la imagen Docker no se pudo construir aquí; sí se verificó la compilación de la SPA con `npm run build`.
 

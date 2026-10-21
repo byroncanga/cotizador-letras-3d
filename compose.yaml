@@ -1,70 +1,9 @@
 services:
-  mysql:
-    image: mysql:8.4
-    restart: unless-stopped
-    init: true
-    environment:
-      MYSQL_DATABASE: taller
-      MYSQL_USER: taller
-      MYSQL_PASSWORD: ${TALLER_DB_PASSWORD:?Configura TALLER_DB_PASSWORD en .env}
-      MYSQL_ROOT_PASSWORD: ${TALLER_DB_ROOT_PASSWORD:?Configura TALLER_DB_ROOT_PASSWORD en .env}
-    volumes:
-      - taller_mysql:/var/lib/mysql
-    healthcheck:
-      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_ROOT_PASSWORD mysqladmin ping -h localhost --silent"]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-  geometry:
-    build:
-      context: .
-      dockerfile: infra/geometry/Dockerfile
-    expose: ["4100"]
-    restart: unless-stopped
-    init: true
-  api:
-    build:
-      context: .
-      dockerfile: infra/api/Dockerfile
-    environment:
-      APP_ENV: production
-      APP_DEBUG: "false"
-      APP_KEY: ${APP_KEY:?Configura APP_KEY de Laravel}
-      APP_URL: ${APP_URL:-http://localhost}
-      LOG_LEVEL: ${LOG_LEVEL:-warning}
-      DB_HOST: mysql
-      DB_CONNECTION: mysql
-      DB_DATABASE: taller
-      DB_USERNAME: taller
-      DB_PASSWORD: ${TALLER_DB_PASSWORD}
-      GEOMETRY_URL: http://geometry:4100
-      SESSION_DRIVER: database
-      CACHE_STORE: database
-      QUEUE_CONNECTION: database
-    expose: ["8000"]
-    restart: unless-stopped
-    init: true
-    volumes:
-      - taller_storage:/app/storage
-    command:
-      - sh
-      - -c
-      - php artisan migrate --force && exec php artisan serve --host=0.0.0.0 --port=8000
-    depends_on:
-      mysql:
-        condition: service_healthy
-      geometry:
-        condition: service_started
-  web:
+  cotizador:
     build:
       context: .
       dockerfile: Dockerfile
-    expose: ["80"]
     restart: unless-stopped
     init: true
-    depends_on:
-      - api
-      - geometry
-volumes:
-  taller_mysql:
-  taller_storage:
+    expose:
+      - "80"
