@@ -1,0 +1,23 @@
+{
+  "name": "@taller/geometry",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "node --import tsx src/server.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test test/*.test.ts"
+  },
+  "dependencies": {
+    "@taller/contracts": "*",
+    "@xmldom/xmldom": "^0.9.12",
+    "paper": "^0.14.0",
+    "svg-path-properties": "^2.2.0",
+    "svgpath": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "tsx": "^4.23.15"
+  }
+}

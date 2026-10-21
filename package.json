@@ -1,0 +1,25 @@
+{
+  "name": "cotizador-letreros",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/web",
+    "packages/contracts",
+    "services/geometry"
+  ],
+  "scripts": {
+    "dev": "concurrently -k -n api,geometria,web -c yellow,cyan,green \"npm run dev:api\" \"npm run dev -w @taller/geometry\" \"npm run dev -w @taller/web\"",
+    "build": "npm run build -w @taller/web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test -w @taller/geometry",
+    "preview": "npm run preview -w @taller/web",
+    "dev:api": "node scripts/api.mjs",
+    "api": "node scripts/api.mjs",
+    "contracts": "node --import tsx scripts/export-contracts.ts",
+    "contracts:check": "node --import tsx scripts/export-contracts.ts --check"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.6",
+    "typescript": "^7.0.2"
+  }
+}

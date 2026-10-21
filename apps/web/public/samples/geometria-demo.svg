@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="670mm" height="190mm" viewBox="0 0 670 190">
+  <title>Ejemplo geométrico LUMA — no es un trabajo de producción</title>
+  <g id="corte" fill="#d4e9df" fill-rule="evenodd" data-operation="cut">
+    <path id="letra-l" d="M0 0H35V155H105V190H0Z"/>
+    <path id="letra-u" d="M135 0H170V130Q170 155 195 155Q220 155 220 130V0H255V132Q255 190 195 190Q135 190 135 132Z"/>
+    <path id="letra-m" d="M290 190V0H330L375 95L420 0H460V190H423V65L383 148H367L327 65V190Z"/>
+    <path id="letra-a" d="M490 190L560 0H600L670 190H628L614 148H545L531 190Z M556 114H603L580 44Z"/>
+  </g>
+</svg>

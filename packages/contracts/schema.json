@@ -1,0 +1,1888 @@
+{
+  "version": "1.0",
+  "units": {
+    "geometry": "mm",
+    "area": "mm²",
+    "currency": "USD",
+    "money": "decimal string"
+  },
+  "schemas": {
+    "SvgAnalysis": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "const": "1.0"
+        },
+        "fileName": {
+          "type": "string"
+        },
+        "sourceHash": {
+          "type": "string"
+        },
+        "scaleConfirmed": {
+          "type": "boolean"
+        },
+        "scaleSource": {
+          "type": "string",
+          "enum": [
+            "physical_units",
+            "operator",
+            "unknown"
+          ]
+        },
+        "widthMm": {
+          "type": "number"
+        },
+        "heightMm": {
+          "type": "number"
+        },
+        "viewBox": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "items": false,
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "contours": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "elementId": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "fillRule": {
+                "type": "string",
+                "enum": [
+                  "evenodd",
+                  "nonzero"
+                ]
+              },
+              "closed": {
+                "type": "boolean"
+              },
+              "duplicateOf": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "cut",
+                  "engrave",
+                  "mark",
+                  "unassigned"
+                ]
+              },
+              "lengthMm": {
+                "type": "number"
+              },
+              "signedAreaMm2": {
+                "type": "number"
+              },
+              "bounds": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "width": {
+                    "type": "number"
+                  },
+                  "height": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "x",
+                  "y",
+                  "width",
+                  "height"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "id",
+              "elementId",
+              "name",
+              "path",
+              "fillRule",
+              "closed",
+              "duplicateOf",
+              "operation",
+              "lengthMm",
+              "signedAreaMm2",
+              "bounds"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "pieces": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "widthMm": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "heightMm": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "areaMm2": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "perimeterMm": {
+                "type": "number",
+                "minimum": 0
+              },
+              "contourIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "widthMm",
+              "heightMm",
+              "areaMm2",
+              "perimeterMm",
+              "contourIds"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "metrics": {
+          "type": "object",
+          "properties": {
+            "closedLengthMm": {
+              "type": "number"
+            },
+            "openLengthMm": {
+              "type": "number"
+            },
+            "assignedCutLengthMm": {
+              "type": "number"
+            },
+            "duplicateLengthMm": {
+              "type": "number"
+            },
+            "netAreaMm2": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "pieceCount": {
+              "type": "number"
+            },
+            "contourCount": {
+              "type": "number"
+            },
+            "openCount": {
+              "type": "number"
+            },
+            "duplicateCount": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "closedLengthMm",
+            "openLengthMm",
+            "assignedCutLengthMm",
+            "duplicateLengthMm",
+            "netAreaMm2",
+            "pieceCount",
+            "contourCount",
+            "openCount",
+            "duplicateCount"
+          ],
+          "additionalProperties": false
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "severity": {
+                "type": "string",
+                "enum": [
+                  "warning",
+                  "blocking"
+                ]
+              },
+              "elementId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "message",
+              "severity"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "review_required",
+            "geometry_valid"
+          ]
+        }
+      },
+      "required": [
+        "version",
+        "fileName",
+        "sourceHash",
+        "scaleConfirmed",
+        "scaleSource",
+        "widthMm",
+        "heightMm",
+        "viewBox",
+        "contours",
+        "pieces",
+        "metrics",
+        "issues",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "Material": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "color": {
+          "type": "string",
+          "minLength": 1
+        },
+        "colorHex": {
+          "default": null,
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "thicknessMm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "widthMm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "heightMm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "supplier": {
+          "type": "string"
+        },
+        "purchasePrice": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d+(\\.\\d{1,4})?$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "marginMm": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "directional": {
+          "type": "boolean"
+        },
+        "updatedAt": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "family",
+        "color",
+        "colorHex",
+        "thicknessMm",
+        "widthMm",
+        "heightMm",
+        "supplier",
+        "purchasePrice",
+        "marginMm",
+        "directional",
+        "updatedAt"
+      ],
+      "additionalProperties": false
+    },
+    "Supplier": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contact": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "contact",
+        "email",
+        "phone",
+        "notes",
+        "updatedAt"
+      ],
+      "additionalProperties": false
+    },
+    "CutProfile": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "machineName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "materialId": {
+          "type": "string"
+        },
+        "kerfMm": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spacingMm": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ratePerMeter": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "setupCost": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "minimumCost": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "calibratedOn": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "machineName",
+        "materialId",
+        "kerfMm",
+        "spacingMm",
+        "ratePerMeter",
+        "setupCost",
+        "minimumCost",
+        "calibratedOn",
+        "updatedAt"
+      ],
+      "additionalProperties": false
+    },
+    "QuoteDraft": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "number": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "customer": {
+          "type": "string"
+        },
+        "depthMm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "frontMaterialId": {
+          "type": "string"
+        },
+        "backMaterialId": {
+          "type": "string"
+        },
+        "edgeMaterialId": {
+          "type": "string"
+        },
+        "lightVariantId": {
+          "default": "",
+          "type": "string"
+        },
+        "ledRoutes": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "elementId": {
+                "type": "string"
+              },
+              "sourceHash": {
+                "type": "string"
+              },
+              "points": {
+                "minItems": 2,
+                "maxItems": 10000,
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "prefixItems": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ],
+                  "items": false,
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              }
+            },
+            "required": [
+              "id",
+              "elementId",
+              "sourceHash",
+              "points"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "componentColors": {
+          "default": {
+            "front": null,
+            "back": null,
+            "edge": null
+          },
+          "type": "object",
+          "properties": {
+            "front": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^#[0-9a-fA-F]{6}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "back": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^#[0-9a-fA-F]{6}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "edge": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^#[0-9a-fA-F]{6}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "front",
+            "back",
+            "edge"
+          ],
+          "additionalProperties": false
+        },
+        "printedElementIds": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "billingMode": {
+          "type": "string",
+          "enum": [
+            "proportional",
+            "full_sheet",
+            "manual"
+          ]
+        },
+        "notes": {
+          "type": "string"
+        },
+        "costs": {
+          "default": {
+            "materialAssignments": [],
+            "materialReason": "",
+            "profileSelections": {},
+            "cuts": [],
+            "cutConfirmed": false,
+            "geometryKey": "",
+            "labor": [],
+            "supplyQuantities": {},
+            "noLabor": false,
+            "vinylCost": null
+          },
+          "type": "object",
+          "properties": {
+            "materialAssignments": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "materialId": {
+                    "type": "string"
+                  },
+                  "quantity": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 32
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "manualCost": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 32
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "materialId",
+                  "quantity",
+                  "manualCost"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "materialReason": {
+              "default": "",
+              "type": "string"
+            },
+            "profileSelections": {
+              "default": {},
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "cuts": {
+              "default": [],
+              "maxItems": 30,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "profileId": {
+                    "type": "string"
+                  },
+                  "lengthMeters": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 32
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "profileId",
+                  "lengthMeters"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "cutConfirmed": {
+              "default": false,
+              "type": "boolean"
+            },
+            "geometryKey": {
+              "default": "",
+              "type": "string"
+            },
+            "labor": {
+              "default": [],
+              "maxItems": 50,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "rateId": {
+                    "type": "string"
+                  },
+                  "minutes": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 32
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "complexity": {
+                    "default": "1",
+                    "type": "string",
+                    "maxLength": 32
+                  }
+                },
+                "required": [
+                  "id",
+                  "rateId",
+                  "minutes",
+                  "complexity"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "supplyQuantities": {
+              "default": {},
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "noLabor": {
+              "default": false,
+              "type": "boolean"
+            },
+            "vinylCost": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 32
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "materialAssignments",
+            "materialReason",
+            "profileSelections",
+            "cuts",
+            "cutConfirmed",
+            "geometryKey",
+            "labor",
+            "supplyQuantities",
+            "noLabor",
+            "vinylCost"
+          ],
+          "additionalProperties": false
+        },
+        "analysis": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "version": {
+                  "type": "string",
+                  "const": "1.0"
+                },
+                "fileName": {
+                  "type": "string"
+                },
+                "sourceHash": {
+                  "type": "string"
+                },
+                "scaleConfirmed": {
+                  "type": "boolean"
+                },
+                "scaleSource": {
+                  "type": "string",
+                  "enum": [
+                    "physical_units",
+                    "operator",
+                    "unknown"
+                  ]
+                },
+                "widthMm": {
+                  "type": "number"
+                },
+                "heightMm": {
+                  "type": "number"
+                },
+                "viewBox": {
+                  "type": "array",
+                  "prefixItems": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ],
+                  "items": false,
+                  "minItems": 4,
+                  "maxItems": 4
+                },
+                "contours": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "elementId": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "path": {
+                        "type": "string"
+                      },
+                      "fillRule": {
+                        "type": "string",
+                        "enum": [
+                          "evenodd",
+                          "nonzero"
+                        ]
+                      },
+                      "closed": {
+                        "type": "boolean"
+                      },
+                      "duplicateOf": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "operation": {
+                        "type": "string",
+                        "enum": [
+                          "cut",
+                          "engrave",
+                          "mark",
+                          "unassigned"
+                        ]
+                      },
+                      "lengthMm": {
+                        "type": "number"
+                      },
+                      "signedAreaMm2": {
+                        "type": "number"
+                      },
+                      "bounds": {
+                        "type": "object",
+                        "properties": {
+                          "x": {
+                            "type": "number"
+                          },
+                          "y": {
+                            "type": "number"
+                          },
+                          "width": {
+                            "type": "number"
+                          },
+                          "height": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "x",
+                          "y",
+                          "width",
+                          "height"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "elementId",
+                      "name",
+                      "path",
+                      "fillRule",
+                      "closed",
+                      "duplicateOf",
+                      "operation",
+                      "lengthMm",
+                      "signedAreaMm2",
+                      "bounds"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "pieces": {
+                  "default": [],
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "widthMm": {
+                        "type": "number",
+                        "exclusiveMinimum": 0
+                      },
+                      "heightMm": {
+                        "type": "number",
+                        "exclusiveMinimum": 0
+                      },
+                      "areaMm2": {
+                        "type": "number",
+                        "exclusiveMinimum": 0
+                      },
+                      "perimeterMm": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "contourIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "name",
+                      "widthMm",
+                      "heightMm",
+                      "areaMm2",
+                      "perimeterMm",
+                      "contourIds"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "metrics": {
+                  "type": "object",
+                  "properties": {
+                    "closedLengthMm": {
+                      "type": "number"
+                    },
+                    "openLengthMm": {
+                      "type": "number"
+                    },
+                    "assignedCutLengthMm": {
+                      "type": "number"
+                    },
+                    "duplicateLengthMm": {
+                      "type": "number"
+                    },
+                    "netAreaMm2": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "pieceCount": {
+                      "type": "number"
+                    },
+                    "contourCount": {
+                      "type": "number"
+                    },
+                    "openCount": {
+                      "type": "number"
+                    },
+                    "duplicateCount": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "closedLengthMm",
+                    "openLengthMm",
+                    "assignedCutLengthMm",
+                    "duplicateLengthMm",
+                    "netAreaMm2",
+                    "pieceCount",
+                    "contourCount",
+                    "openCount",
+                    "duplicateCount"
+                  ],
+                  "additionalProperties": false
+                },
+                "issues": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "string"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "severity": {
+                        "type": "string",
+                        "enum": [
+                          "warning",
+                          "blocking"
+                        ]
+                      },
+                      "elementId": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "message",
+                      "severity"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "review_required",
+                    "geometry_valid"
+                  ]
+                }
+              },
+              "required": [
+                "version",
+                "fileName",
+                "sourceHash",
+                "scaleConfirmed",
+                "scaleSource",
+                "widthMm",
+                "heightMm",
+                "viewBox",
+                "contours",
+                "pieces",
+                "metrics",
+                "issues",
+                "status"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "isExample": {
+          "type": "boolean"
+        },
+        "updatedAt": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "number",
+        "title",
+        "customer",
+        "depthMm",
+        "frontMaterialId",
+        "backMaterialId",
+        "edgeMaterialId",
+        "lightVariantId",
+        "ledRoutes",
+        "componentColors",
+        "printedElementIds",
+        "billingMode",
+        "notes",
+        "costs",
+        "analysis",
+        "isExample",
+        "updatedAt"
+      ],
+      "additionalProperties": false
+    },
+    "CostPreviewRequest": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "materials": {
+          "minItems": 1,
+          "maxItems": 30,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "quantity": {
+                "type": "string",
+                "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+              },
+              "unitPrice": {
+                "type": "string",
+                "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+              }
+            },
+            "required": [
+              "label",
+              "quantity",
+              "unitPrice"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "cuts": {
+          "minItems": 1,
+          "maxItems": 30,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "profileId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "lengthMeters": {
+                "type": "string",
+                "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+              },
+              "ratePerMeter": {
+                "type": "string",
+                "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+              },
+              "setupCost": {
+                "type": "string",
+                "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+              },
+              "minimumCost": {
+                "type": "string",
+                "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+              }
+            },
+            "required": [
+              "profileId",
+              "label",
+              "lengthMeters",
+              "ratePerMeter",
+              "setupCost",
+              "minimumCost"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "labor": {
+          "maxItems": 50,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "minutes": {
+                "type": "string",
+                "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+              },
+              "ratePerHour": {
+                "type": "string",
+                "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+              },
+              "complexity": {
+                "type": "string",
+                "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+              }
+            },
+            "required": [
+              "label",
+              "minutes",
+              "ratePerHour",
+              "complexity"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "supplies": {
+          "default": [],
+          "maxItems": 100,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "quantity": {
+                "type": "string",
+                "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+              },
+              "unitPrice": {
+                "type": "string",
+                "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+              }
+            },
+            "required": [
+              "label",
+              "quantity",
+              "unitPrice"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "noLabor": {
+          "type": "boolean"
+        },
+        "cutConfirmed": {
+          "type": "boolean"
+        },
+        "vinylCost": {
+          "type": "string",
+          "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+        },
+        "indirectCost": {
+          "type": "string",
+          "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+        },
+        "markupPercent": {
+          "type": "string",
+          "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+        },
+        "taxPercent": {
+          "type": "string",
+          "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+        },
+        "commercialMinimum": {
+          "type": "string",
+          "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+        }
+      },
+      "required": [
+        "materials",
+        "cuts",
+        "labor",
+        "supplies",
+        "noLabor",
+        "vinylCost",
+        "indirectCost",
+        "markupPercent",
+        "taxPercent",
+        "commercialMinimum"
+      ],
+      "additionalProperties": false
+    },
+    "CostPreview": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "const": "1.0"
+        },
+        "materials": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "label",
+              "amount"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "cuts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "label",
+              "amount"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "labor": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "label",
+              "amount"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "supplies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "label",
+              "amount"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "suppliesTotal": {
+          "type": "string"
+        },
+        "materialTotal": {
+          "type": "string"
+        },
+        "materialAndVinylTotal": {
+          "type": "string"
+        },
+        "cutTotal": {
+          "type": "string"
+        },
+        "laborTotal": {
+          "type": "string"
+        },
+        "vinylCost": {
+          "type": "string"
+        },
+        "indirectCost": {
+          "type": "string"
+        },
+        "totalCost": {
+          "type": "string"
+        },
+        "net": {
+          "type": "string"
+        },
+        "tax": {
+          "type": "string"
+        },
+        "total": {
+          "type": "string"
+        },
+        "markupPercent": {
+          "type": "string"
+        },
+        "taxPercent": {
+          "type": "string"
+        },
+        "minimumApplied": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "version",
+        "materials",
+        "cuts",
+        "labor",
+        "supplies",
+        "suppliesTotal",
+        "materialTotal",
+        "materialAndVinylTotal",
+        "cutTotal",
+        "laborTotal",
+        "vinylCost",
+        "indirectCost",
+        "totalCost",
+        "net",
+        "tax",
+        "total",
+        "markupPercent",
+        "taxPercent",
+        "minimumApplied"
+      ],
+      "additionalProperties": false
+    },
+    "CostingSettings": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "laborRates": {
+          "default": [],
+          "maxItems": 50,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "ratePerHour": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "ratePerHour"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "supplies": {
+          "default": [],
+          "maxItems": 100,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 150
+              },
+              "unit": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 30
+              },
+              "unitPrice": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "defaultQuantity": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "consumptionMode": {
+                "default": "per_job",
+                "type": "string",
+                "enum": [
+                  "per_job",
+                  "per_edge_meter"
+                ]
+              },
+              "consumptionPerMeter": {
+                "default": null,
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "unit",
+              "unitPrice",
+              "defaultQuantity",
+              "consumptionMode",
+              "consumptionPerMeter"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "ledRates": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "markupPercent": {
+          "default": null,
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "taxPercent": {
+          "default": null,
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "commercialMinimum": {
+          "default": null,
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "indirectCost": {
+          "default": null,
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "laborRates",
+        "supplies",
+        "ledRates",
+        "markupPercent",
+        "taxPercent",
+        "commercialMinimum",
+        "indirectCost"
+      ],
+      "additionalProperties": false
+    },
+    "QuoteCosts": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "materialAssignments": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "materialId": {
+                "type": "string"
+              },
+              "quantity": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 32
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "manualCost": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 32
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "materialId",
+              "quantity",
+              "manualCost"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "materialReason": {
+          "default": "",
+          "type": "string"
+        },
+        "profileSelections": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "cuts": {
+          "default": [],
+          "maxItems": 30,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "profileId": {
+                "type": "string"
+              },
+              "lengthMeters": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 32
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "profileId",
+              "lengthMeters"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "cutConfirmed": {
+          "default": false,
+          "type": "boolean"
+        },
+        "geometryKey": {
+          "default": "",
+          "type": "string"
+        },
+        "labor": {
+          "default": [],
+          "maxItems": 50,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "rateId": {
+                "type": "string"
+              },
+              "minutes": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 32
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "complexity": {
+                "default": "1",
+                "type": "string",
+                "maxLength": 32
+              }
+            },
+            "required": [
+              "id",
+              "rateId",
+              "minutes",
+              "complexity"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "supplyQuantities": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{1,12}(\\.\\d{1,6})?$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "noLabor": {
+          "default": false,
+          "type": "boolean"
+        },
+        "vinylCost": {
+          "default": null,
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 32
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "materialAssignments",
+        "materialReason",
+        "profileSelections",
+        "cuts",
+        "cutConfirmed",
+        "geometryKey",
+        "labor",
+        "supplyQuantities",
+        "noLabor",
+        "vinylCost"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
