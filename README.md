@@ -39,9 +39,21 @@ La cuenta propietaria se crea con datos introducidos por el operador. No hay usu
 
 ### Docker y EasyPanel
 
-`Dockerfile` compila la SPA y la sirve con Nginx. `compose.yaml` levanta la web, Laravel, el servicio geométrico y MySQL; el punto de entrada HTTP es `web:80`. Para un servidor propio, copia `.env.example` como `.env`, genera una clave con `php artisan key:generate --show` dentro de `apps/api`, y completa `APP_KEY`, `APP_URL`, `TALLER_DB_PASSWORD` y `TALLER_DB_ROOT_PASSWORD` con valores secretos propios. Luego ejecuta `docker compose up --build -d` y aplica las migraciones con `docker compose exec api php artisan migrate --force`.
+`Dockerfile` compila la SPA y la sirve con Nginx. `compose.yaml` levanta la web, Laravel, el servicio geométrico y MySQL; el punto de entrada HTTP es `web:80`. Laravel aplica las migraciones automáticamente cuando inicia la API. MySQL no publica ningún puerto al exterior y conserva los datos en el volumen `taller_mysql`.
 
-En EasyPanel, conecta este repositorio como aplicación Docker Compose usando `compose.yaml`, configura esas cuatro variables en el panel y dirige el dominio al servicio `web`, puerto `80`. Conserva los volúmenes `taller_mysql` y `taller_storage` al actualizar. No publiques directamente MySQL, Laravel ni el servicio geométrico.
+#### EasyPanel
+
+1. Crea un servicio **Compose** conectado al repositorio `byroncanga/cotizador-letras-3d`, rama `main`.
+2. Usa la raíz del repositorio como Build Path (`/`) y `compose.yaml` como archivo Compose. No lo crees como servicio **App/Dockerfile**: ese modo levanta solo la web y produce el error `host not found in upstream "geometry"`.
+3. Antes del primer Deploy, añade estas variables en el panel de EasyPanel. No las guardes en GitHub:
+   - `APP_KEY`: una clave Laravel generada una vez con `php artisan key:generate --show` desde `apps/api`.
+   - `APP_URL`: la URL HTTPS final del cotizador.
+   - `TALLER_DB_PASSWORD`: contraseña nueva para el usuario MySQL de la aplicación.
+   - `TALLER_DB_ROOT_PASSWORD`: contraseña nueva y distinta para el administrador MySQL.
+4. Dirige el dominio público al servicio `web`, puerto `80`. No publiques `mysql`, `api` ni `geometry`.
+5. Pulsa **Deploy**. La API esperará a que MySQL esté saludable y aplicará las migraciones automáticamente.
+
+Conserva los volúmenes `taller_mysql` y `taller_storage` al actualizar. Si ya existe una instalación, utiliza los mismos valores de contraseñas y conserva esos volúmenes; reemplazarlos puede borrar datos.
 
 **Estado de esta entrega:** el contenedor compila y sirve la interfaz, pero aún no es un cotizador de producción completo. Los borradores siguen en el navegador y el endpoint de previsualización de costos está restringido al modo local; la UI todavía no inicia sesión ni sincroniza cotizaciones con MySQL. No uses esta entrega para emitir precios comerciales hasta terminar esa integración. Docker no está instalado en el equipo de desarrollo de esta sesión, por lo que la imagen Docker no se pudo construir aquí; sí se verificó la compilación de la SPA con `npm run build`.
 
