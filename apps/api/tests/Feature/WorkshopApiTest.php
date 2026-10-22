@@ -21,9 +21,40 @@ class WorkshopApiTest extends TestCase
         $this->getJson('/api/v1/materials')->assertUnauthorized();
     }
 
-    public function test_usuario_sin_rol_propietario_no_puede_editar_403(): void
+    public function test_usuario_sin_rol_propietario_no_puede_gestionar_usuarios(): void
     {
-        $this->actingAs(User::factory()->create())->postJson('/api/v1/materials', [])->assertForbidden();
+        $this->actingAs(User::factory()->create())->postJson('/api/v1/users', [])->assertForbidden();
+    }
+
+    public function test_primera_visita_permite_crear_la_cuenta_propietaria_una_sola_vez(): void
+    {
+        $this->getJson('/api/v1/setup/status')->assertOk()->assertJsonPath('data.needsOwner', true);
+        $response = $this->postJson('/api/v1/setup/owner', ['name' => 'Dueña del taller', 'email' => 'owner@example.test', 'password' => 'contraseña-segura-2026', 'password_confirmation' => 'contraseña-segura-2026']);
+        $response->assertOk()->assertJsonPath('data.email', 'owner@example.test')->assertJsonPath('data.isOwner', true);
+        $this->assertAuthenticated();
+        $this->getJson('/api/v1/setup/status')->assertOk()->assertJsonPath('data.needsOwner', false);
+        $this->postJson('/api/v1/setup/owner', ['name' => 'Otra cuenta', 'email' => 'other@example.test', 'password' => 'contraseña-segura-2026', 'password_confirmation' => 'contraseña-segura-2026'])->assertConflict();
+        $this->assertDatabaseCount('users', 1);
+    }
+
+    public function test_propietario_crea_operadores_y_solo_el_propietario_lista_usuarios(): void
+    {
+        $owner = User::factory()->owner()->create();
+        $response = $this->actingAs($owner)->postJson('/api/v1/users', ['name' => 'Operadora', 'email' => 'operadora@example.test', 'password' => 'clave-operadora-2026', 'password_confirmation' => 'clave-operadora-2026', 'isOwner' => false]);
+        $response->assertCreated()->assertJsonPath('data.isOwner', false)->assertJsonMissingPath('data.password');
+        $this->assertDatabaseHas('users', ['email' => 'operadora@example.test', 'is_owner' => false]);
+        $this->assertNotSame('clave-operadora-2026', (string) \App\Models\User::where('email', 'operadora@example.test')->value('password'));
+        $this->getJson('/api/v1/users')->assertOk()->assertJsonCount(2, 'data');
+        $this->actingAs(User::where('email', 'operadora@example.test')->firstOrFail())->getJson('/api/v1/users')->assertForbidden();
+    }
+
+    public function test_usuario_operador_puede_iniciar_sesion_sin_permisos_de_propietario(): void
+    {
+        User::factory()->create(['email' => 'operadora@example.test', 'password' => 'clave-operadora-2026']);
+
+        $this->postJson('/api/v1/login', ['email' => 'operadora@example.test', 'password' => 'clave-operadora-2026'])
+            ->assertOk()->assertJsonPath('data.isOwner', false);
+        $this->assertAuthenticated();
     }
 
     public function test_material_guarda_precios_desconocidos_como_null(): void

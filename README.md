@@ -39,19 +39,20 @@ La cuenta propietaria se crea con datos introducidos por el operador. No hay usu
 
 ### Docker y EasyPanel
 
-El `Dockerfile` raíz crea una imagen única para el modo **App / Dockerfile** de EasyPanel. Incluye la web, el analizador geométrico y Laravel, y Nginx los enruta dentro del mismo contenedor. No requiere configurar servicios upstream, base de datos ni variables para iniciar. La clave de Laravel se genera al arrancar.
+El `Dockerfile` raíz crea una imagen única para el modo **App / Dockerfile** de EasyPanel. Incluye la web, el analizador geométrico y Laravel, y Nginx los enruta dentro del mismo contenedor. Usa SQLite dentro de `/app/storage`, aplica las migraciones al iniciar y crea la clave de Laravel una sola vez en ese almacenamiento.
 
 #### EasyPanel (App / Dockerfile)
 
 1. En Source, usa GitHub, el repositorio `byroncanga/cotizador-letras-3d`, rama `main` y Build Path `/`.
 2. En Build, selecciona Dockerfile y deja el archivo `Dockerfile`.
 3. Guarda y pulsa **Deploy**. La aplicación escucha HTTP en el puerto `80`; no requiere variables de entorno para iniciar.
+4. En la primera visita, crea la cuenta propietaria. Después podrás iniciar sesión y crear cuentas de operador o de propietario desde **Usuarios**.
 
-La cotización y la configuración de esta versión se mantienen en el almacenamiento local del navegador. La API de administración con almacenamiento MySQL aún no está integrada en los flujos de la interfaz.
+Conserva el almacenamiento de `/app/storage` en EasyPanel para preservar las cuentas y la base SQLite cuando se recree el contenedor. Cada usuario mantiene sus cotizaciones y configuración en el almacenamiento local de su navegador; no se sincronizan aún entre dispositivos.
 
-**Estado de esta entrega:** el contenedor compila y sirve la interfaz, pero aún no es un cotizador de producción completo. Los borradores siguen en el navegador y el endpoint de previsualización de costos está restringido al modo local; la UI todavía no inicia sesión ni sincroniza cotizaciones con MySQL. No uses esta entrega para emitir precios comerciales hasta terminar esa integración. Docker no está instalado en el equipo de desarrollo de esta sesión, por lo que la imagen Docker no se pudo construir aquí; sí se verificó la compilación de la SPA con `npm run build`.
+**Estado de esta entrega:** el acceso, las cuentas de usuario, el análisis SVG y el cálculo de costos son operativos. Los borradores y catálogos siguen guardándose en el navegador por usuario, así que no se sincronizan entre dispositivos. Revisa los cálculos con los parámetros reales de tu taller antes de usar precios comerciales.
 
-Las rutas privadas de `/api/v1` requieren Sanctum y rol propietario. La SPA integrada deberá obtener `/sanctum/csrf-cookie` y enviar `X-XSRF-TOKEN` al escribir. **La interfaz local aún no inicia sesión ni sincroniza con la API:** esa integración corresponde a la siguiente entrega. Para servir geometría en esa integración, usar `VITE_GEOMETRY_URL=/api/v1/designs` y adaptar la llamada al endpoint `/api/v1/designs/analyze`.
+Las rutas privadas de `/api/v1` usan sesión y protección CSRF. La SPA obtiene `/sanctum/csrf-cookie` antes de iniciar sesión o crear cuentas. Los usuarios operadores pueden usar el cotizador; solo un propietario puede gestionar cuentas.
 
 ## Verificación
 

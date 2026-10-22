@@ -70,7 +70,7 @@ function toPlan(input:StockPlanInput):MaterialPlanResponse{
  const append=(materialId:string,part:Part|null,edge=false)=>{const group=assigned.get(materialId)||{faces:[],edge:false};if(part)group.faces.push(part);if(edge)group.edge=true;assigned.set(materialId,group);};
  const front=materials.get(input.frontMaterialId),edge=materials.get(input.edgeMaterialId),back=input.backMaterialId?materials.get(input.backMaterialId):null;
  if(!input.analysis.scaleConfirmed||input.analysis.status!=='geometry_valid'||input.analysis.metrics.netAreaMm2===null)globalBlocking.push('Valida la escala, el área y todas las observaciones del SVG.');
- if(!front||!edge||input.backMaterialId&&!back)globalBlocking.push('Asigna variantes disponibles para frente, fondo y cantos.');
+ if(!front||input.edgeMaterialId&&!edge||input.backMaterialId&&!back)globalBlocking.push('Asigna variantes válidas a los componentes seleccionados.');
  if(front)for(const p of input.analysis.pieces)append(front.materialId,{id:`${p.id}:frente`,label:`${p.name} · frente`,component:'front',width:p.widthMm,height:p.heightMm,area:p.areaMm2,contourIds:p.contourIds,rotatable:!front.directional});
  if(back)for(const p of input.analysis.pieces)append(back.materialId,{id:`${p.id}:fondo`,label:`${p.name} · fondo`,component:'back',width:p.widthMm,height:p.heightMm,area:p.areaMm2,contourIds:p.contourIds,rotatable:!back.directional});
  if(edge)append(edge.materialId,null,true);

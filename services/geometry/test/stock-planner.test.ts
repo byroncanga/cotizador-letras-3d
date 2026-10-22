@@ -27,3 +27,7 @@ test('nests every face as an independent adjustable placement without rectangle 
  assert.equal(faces.length,4);assert.equal(new Set(faces.map(placement=>placement.id)).size,4);assert.ok(item.sheetCount<=2);
  for(const sheet of item.sheets)noOverlap(sheet.placements);
 });
+test('shows the measured front material plan before an edge material is assigned',()=>{
+ const result=toPlan({analysis:analysis('<rect id="A" width="100" height="50"/>'),materials:[material],prices:{acrilico:'20'},profiles:[profile],frontMaterialId:'acrilico',backMaterialId:null,edgeMaterialId:'',depthMm:50,minReusableOffcutMm:300});
+ const item=result.plans[0];assert.equal(item.materialId,'acrilico');assert.equal(item.faceCount,1);assert.equal(item.stripsRequired,0);assert.ok(item.sheets[0].placements.some(placement=>placement.component==='front'));assert.equal(item.blocking.length,0);
+});

@@ -15,13 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function (): void {
-            if (app()->environment(['local', 'testing'])) {
-                Route::post('/local/cost-preview', CostPreviewController::class)->name('local.cost-preview');
-            }
+            Route::post('/local/cost-preview', CostPreviewController::class)
+                ->middleware(['web', 'auth:web', 'throttle:60,1'])
+                ->name('local.cost-preview');
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->statefulApi();
         $middleware->alias(['owner' => RequireOwner::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

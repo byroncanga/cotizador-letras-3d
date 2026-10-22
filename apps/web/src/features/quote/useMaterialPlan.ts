@@ -6,7 +6,7 @@ export function useMaterialPlan(draft:QuoteDraft,state:Workspace){
     const analysis=draft.analysis;
     const ids=[...new Set([draft.frontMaterialId,draft.backMaterialId,draft.edgeMaterialId].filter(Boolean))];
     const materials=ids.map(id=>state.materials.find(item=>item.id===id)).filter((item):item is NonNullable<typeof item>=>Boolean(item));
-    if(!analysis||!analysis.scaleConfirmed||!draft.frontMaterialId||!draft.edgeMaterialId||!materials.length)return {key:'',missing:['Sube un SVG con escala confirmada y asigna materiales de frente y cantos.']};
+    if(!analysis||!analysis.scaleConfirmed||!materials.length)return {key:'',missing:['Sube un SVG con escala confirmada y asigna el material que quieres revisar.']};
     const profiles=materials.flatMap(material=>{
       const matches=state.profiles.filter(profile=>profile.materialId===material.id);
       const selected=draft.costs.profileSelections[material.id];

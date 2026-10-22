@@ -9,9 +9,15 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function (): void {
     Route::get('health', fn () => response()->json(['status' => 'ok', 'version' => '1.0', 'database' => config('database.default')]))->name('api.health');
     Route::post('login', [AuthController::class, 'login'])->middleware(['web', 'throttle:5,1'])->name('api.login');
-    Route::middleware(['auth:sanctum', 'owner'])->group(function (): void {
+    Route::get('setup/status', [AuthController::class, 'setupStatus'])->name('api.setup.status');
+    Route::post('setup/owner', [AuthController::class, 'createInitialOwner'])->middleware(['web', 'throttle:3,1'])->name('api.setup.owner');
+    Route::middleware(['web', 'auth:web'])->group(function (): void {
         Route::get('me', [AuthController::class, 'me'])->name('api.me');
         Route::post('logout', [AuthController::class, 'logout'])->middleware('web')->name('api.logout');
+        Route::middleware('owner')->group(function (): void {
+            Route::get('users', [AuthController::class, 'users']);
+            Route::post('users', [AuthController::class, 'createUser']);
+        });
         Route::get('materials', [CatalogController::class, 'materials']);
         Route::post('materials', [CatalogController::class, 'storeMaterial']);
         Route::put('materials/{material}', [CatalogController::class, 'updateMaterial']);

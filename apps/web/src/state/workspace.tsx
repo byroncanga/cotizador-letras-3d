@@ -18,20 +18,21 @@ function upgrade(data:unknown):unknown{
   }
   return withLights;
 }
-function initial():{workspace:Workspace;error:string|null}{
-  try{const raw=localStorage.getItem(KEY);if(raw){const parsed=workspaceSchema.parse(upgrade(JSON.parse(raw)));return {workspace:parsed,error:null};}}
+function initial(key:string,allowLegacy:boolean):{workspace:Workspace;error:string|null}{
+  try{const raw=localStorage.getItem(key)||(allowLegacy?localStorage.getItem(KEY):null);if(raw){const parsed=workspaceSchema.parse(upgrade(JSON.parse(raw)));return {workspace:parsed,error:null};}}
   catch{return {workspace:empty(),error:'No se pudo leer el guardado anterior. Descarga o recupera una copia antes de reemplazarlo.'};}
   return {workspace:empty(),error:null};
 }
 function empty():Workspace{const draft=newDraft(1);return {version:1,drafts:[draft],activeDraftId:draft.id,materials:[],lights:[{id:'light-normal-default',name:'Luz normal',kind:'normal',modulesPerMeter:'18',updatedAt:new Date().toISOString()}],suppliers:[],profiles:[],settings:{businessName:'',companyLogoDataUrl:null,validDays:null,minLinearOffcutMm:300,costing:costingSettingsSchema.parse({})}};}
 interface Context {state:Workspace;actions:{patchDraft:(patch:Partial<QuoteDraft>)=>void;createDraft:()=>string;openDraft:(id:string)=>void;duplicateDraft:(id:string)=>void;removeDraft:(id:string)=>void;saveMaterial:(item:Material)=>void;saveLight:(item:LightVariant)=>void;removeLight:(id:string)=>void;saveSupplier:(item:Supplier)=>void;saveProfile:(item:CutProfile)=>void;patchSettings:(patch:Partial<Workspace['settings']>)=>void;restore:(data:unknown)=>void;persist:()=>void};meta:{saveStatus:'saved'|'saving'|'error';storageError:string|null;activeDraft:QuoteDraft;restoreWarning:string|null};}
 const WorkspaceContext=createContext<Context|null>(null);
-export function WorkspaceProvider({children}:{children:ReactNode}){
-  const [loaded]=useState(initial);const [state,setState]=useState(loaded.workspace);const [storageError,setStorageError]=useState<string|null>(loaded.error);const [saveStatus,setSaveStatus]=useState<'saved'|'saving'|'error'>(loaded.error?'error':'saved');const [restoreWarning,setRestoreWarning]=useState(loaded.error);
+export function WorkspaceProvider({children,userId,isOwner}:{children:ReactNode;userId:number;isOwner:boolean}){
+  const storageKey=`${KEY}.${userId}`;
+  const [loaded]=useState(()=>initial(storageKey,isOwner));const [state,setState]=useState(loaded.workspace);const [storageError,setStorageError]=useState<string|null>(loaded.error);const [saveStatus,setSaveStatus]=useState<'saved'|'saving'|'error'>(loaded.error?'error':'saved');const [restoreWarning,setRestoreWarning]=useState(loaded.error);
   const initialRef=useRef(true);
   useEffect(()=>{if(state.settings.costing.markupPercent===undefined)setState(workspaceSchema.parse(upgrade(state)));},[state]);
-  function persist(){try{localStorage.setItem(KEY,JSON.stringify(state));setSaveStatus('saved');setStorageError(null);setRestoreWarning(null);}catch{setSaveStatus('error');setStorageError('El navegador no pudo guardar. Descarga una copia de tu espacio de trabajo.');}}
-  useEffect(()=>{if(initialRef.current){initialRef.current=false;return;}if(restoreWarning)return;setSaveStatus('saving');const timer=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(state));setSaveStatus('saved');setStorageError(null);}catch{setSaveStatus('error');setStorageError('No se pudo guardar en este navegador. Descarga una copia de seguridad.');}},350);return()=>clearTimeout(timer);},[state,restoreWarning]);
+  function persist(){try{localStorage.setItem(storageKey,JSON.stringify(state));setSaveStatus('saved');setStorageError(null);setRestoreWarning(null);}catch{setSaveStatus('error');setStorageError('El navegador no pudo guardar. Descarga una copia de tu espacio de trabajo.');}}
+  useEffect(()=>{if(initialRef.current){initialRef.current=false;return;}if(restoreWarning)return;setSaveStatus('saving');const timer=setTimeout(()=>{try{localStorage.setItem(storageKey,JSON.stringify(state));setSaveStatus('saved');setStorageError(null);}catch{setSaveStatus('error');setStorageError('No se pudo guardar en este navegador. Descarga una copia de seguridad.');}},350);return()=>clearTimeout(timer);},[state,restoreWarning,storageKey]);
   const activeDraft=state.drafts.find(d=>d.id===state.activeDraftId)||state.drafts[0];
   const value:Context={state,meta:{saveStatus,storageError,activeDraft,restoreWarning},actions:{
     patchDraft:patch=>setState(s=>({...s,drafts:s.drafts.map(d=>d.id===s.activeDraftId?{...d,...patch,updatedAt:new Date().toISOString()}:d)})),

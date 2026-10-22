@@ -35,8 +35,8 @@ RUN composer dump-autoload --no-dev --optimize \
     && chown -R www-data:www-data storage bootstrap/cache
 
 FROM php:8.5-cli-bookworm AS runtime
-RUN apt-get update && apt-get install -y --no-install-recommends nginx nodejs supervisor curl libzip-dev libicu-dev libonig-dev \
-    && docker-php-ext-install pdo_mysql bcmath intl zip mbstring \
+RUN apt-get update && apt-get install -y --no-install-recommends nginx nodejs supervisor curl libzip-dev libicu-dev libonig-dev libsqlite3-dev \
+    && docker-php-ext-install pdo_mysql pdo_sqlite bcmath intl zip mbstring \
     && rm -rf /var/lib/apt/lists/* \
     && rm -f /etc/nginx/sites-enabled/default /etc/nginx/conf.d/default.conf
 WORKDIR /app
@@ -52,13 +52,16 @@ COPY infra/web/container-start /usr/local/bin/container-start
 RUN chmod +x /usr/local/bin/container-start \
     && mkdir -p /var/log/supervisor \
     && chown -R www-data:www-data /app/storage /app/bootstrap/cache /opt/taller
-ENV APP_ENV=local \
+ENV APP_ENV=production \
     APP_DEBUG=false \
+    DB_CONNECTION=sqlite \
+    DB_DATABASE=/app/storage/app.sqlite \
     SESSION_DRIVER=file \
     CACHE_STORE=file \
     QUEUE_CONNECTION=sync \
     GEOMETRY_HOST=127.0.0.1
 EXPOSE 80
+VOLUME ["/app/storage"]
 HEALTHCHECK --interval=30s --timeout=3s --start-period=20s --retries=3 \
-  CMD curl -fsS http://127.0.0.1/health >/dev/null || exit 1
+  CMD curl -fsS http://127.0.0.1/health >/dev/null && curl -fsS http://127.0.0.1:4100/health >/dev/null && curl -fsS http://127.0.0.1:8000/api/v1/setup/status >/dev/null || exit 1
 CMD ["/usr/local/bin/container-start"]

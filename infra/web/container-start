@@ -1,9 +1,22 @@
 #!/bin/sh
 set -eu
 
+mkdir -p /app/storage/framework/cache/data /app/storage/framework/sessions /app/storage/framework/views /app/storage/logs
+touch /app/storage/app.sqlite
+chown -R www-data:www-data /app/storage
+
 if [ -z "${APP_KEY:-}" ]; then
-    APP_KEY="base64:$(php -r 'echo base64_encode(random_bytes(32));')"
+    key_file=/app/storage/framework/app.key
+    if [ -s "$key_file" ]; then
+        APP_KEY=$(cat "$key_file")
+    else
+        APP_KEY="base64:$(php -r 'echo base64_encode(random_bytes(32));')"
+        printf '%s' "$APP_KEY" > "$key_file"
+        chown www-data:www-data "$key_file"
+    fi
     export APP_KEY
 fi
+
+php artisan migrate --force
 
 exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
